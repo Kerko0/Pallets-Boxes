@@ -22,7 +22,7 @@ class Program
             double height = rnd.NextDouble() * (0.1 - 0.05) + 0.05;
             double weight = rnd.Next(15, 31);
             Pallet pallet = new Pallet(height, width, length, weight);
-            int boxAmount = rnd.Next(6, 6);
+            int boxAmount = rnd.Next(0, 6);
             for (int j = 0; j < boxAmount; j++)
             {
                 new Box(pallet);
