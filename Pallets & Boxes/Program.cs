@@ -5,14 +5,6 @@ using System.Dynamic;
 
 class Program
 {
-    public static void SortPalletsBy<T>(Func<Pallet, T> keySelector, List<Pallet> pallets, bool descending = false) where T : IComparable<T>
-    {
-        pallets.Sort((pallet1, pallet2) =>
-        {
-            int result = keySelector(pallet1).CompareTo(keySelector(pallet2));
-            return descending ? -result : result;
-        });
-    }
     public static List<Pallet> GeneratePalletDictionary( in int num = 1000)
     {
         if (num < 0)
@@ -30,7 +22,7 @@ class Program
             double height = rnd.NextDouble() * (0.1 - 0.05) + 0.05;
             double weight = rnd.Next(15, 31);
             Pallet pallet = new Pallet(height, width, length, weight);
-            int boxAmount = rnd.Next(0, 6);
+            int boxAmount = rnd.Next(6, 6);
             for (int j = 0; j < boxAmount; j++)
             {
                 new Box(pallet);
@@ -66,7 +58,7 @@ class Program
     {
         SortedDictionary<DateOnly, List<Pallet>> output = [];
 
-        SortPalletsBy(pallet => pallet.TotalWeight, input);
+        input = input.OrderBy(p => p.TotalWeight).ToList();
         for (int i = 0; i < input.Count; i++)
         {
             DateOnly date = input[i].ExpDate.GetValueOrDefault();
@@ -88,13 +80,14 @@ class Program
         {
             return output;
         }
-        SortPalletsBy(pallet => pallet.ExpDate.GetValueOrDefault(), input, true);
 
-        for (int i = 0; i < amount; i++)
+        output = input.OrderByDescending(p => p.ExpDate).Take(amount).ToList();
+
+        foreach(var pallet in output)
         {
-            output.Add(input[i]);
-            output[i].SortBoxesBy(box => box.Weight);
+            pallet.SortBoxesBy(box => box.Weight);
         }
+
         return output;
     }
 
